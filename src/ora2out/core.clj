@@ -88,10 +88,12 @@
 
     ;; Write to stdout
   ;(def q ["select * from db_config_param where name = 'SELECT.RC_POUTL'"])
-  (def q ["select * from qr_graph"])
+  ;(def q ["select * from qr_graph"])
+  (def q ["select * from db_config_param"])
   (def rs (j/query db q :as-arrays? true))
   (let [header (map name (first rs))]
     (csv/write-csv *out* (cons header (rest rs))))
+  (flush)
 
     ;(println "End!")
     )
