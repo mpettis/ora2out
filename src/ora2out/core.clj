@@ -22,15 +22,18 @@
 
   ; parse command line options
   ; http://blog.cymen.org/2012/03/09/clojure-using-clojuretools-cli-to-parse-command-line-arguments/
+  ; https://github.com/clojure-cookbook/clojure-cookbook/blob/master/03_general-computing/3-07_parse-command-line-arguments.asciidoc
   (let [[options args banner]
           (c/cli args
+            ["-h" "--help" "Print this help" :default false :flag true]
+            ["-qtext" "Query, as single string" :default "select * from db_config_param"]
             ["-host" "Database host" :default "tcp-science1.quantumretail.com"]
             ["-sid" "Database SID" :default "quantum"]
             ["-port" "Database port to listen on" :default "1521"]
             ["-user" "Database user" :default "quantum"]
             ["-password" "Database password" :default "Q2010"])]
-      ;(println "port:" (:port options))
-      (def argopts options))
+      (def argopts options)
+      (when (:help argopts) (println banner) (System/exit 0)))
 
     ;(println "port:" (:port argopts))
 
@@ -89,7 +92,8 @@
     ;; Write to stdout
   ;(def q ["select * from db_config_param where name = 'SELECT.RC_POUTL'"])
   ;(def q ["select * from qr_graph"])
-  (def q ["select * from db_config_param"])
+  ;(def q ["select * from db_config_param"])
+  (def q [(:qtext argopts)])
   (def rs (j/query db q :as-arrays? true))
   (let [header (map name (first rs))]
     (csv/write-csv *out* (cons header (rest rs))))
